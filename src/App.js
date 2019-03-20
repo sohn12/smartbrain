@@ -131,7 +131,8 @@ class App extends Component {
             method: "put",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-              id: this.state.user.id
+              id: this.state.user.id,
+              faces: response.outputs[0].data.regions.length
             })
           })
             .then(res => res.json())

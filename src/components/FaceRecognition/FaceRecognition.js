@@ -13,7 +13,6 @@ import "./FaceRecognition.css";
 // box.region_info.bounding_box
 
 const FaceRecognition = ({ boxArray, imageUrl }) => {
-  console.log(boxArray);
   const faceArray = boxArray.map((box, key) => {
     return (
       <div
