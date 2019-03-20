@@ -42,7 +42,7 @@ class App extends Component {
     this.state = {
       input: "",
       imageUrl: "",
-      box: {},
+      boxArray: [],
       route: "signin",
       isSignedIn: false,
       user: {
@@ -68,22 +68,38 @@ class App extends Component {
   };
 
   calculateFaceLocation = data => {
-    const clarifaiFace =
-      data.outputs[0].data.regions[0].region_info.bounding_box;
+    // const clarifaiFace =
+    //   data.outputs[0].data.regions[0].region_info.bounding_box;
     const image = document.getElementById("inputimage");
     const width = Number(image.width);
     const height = Number(image.height);
+    const clarifaiFace = data.outputs[0].data.regions;
+    var sObj = [];
+    clarifaiFace.map((face, key) => {
+      var rObj = {};
+
+      rObj[key] = face.region_info.bounding_box;
+      sObj[key] = {
+        leftCol: rObj[key].left_col * width,
+        topRow: rObj[key].top_row * height,
+        rightCol: width - rObj[key].right_col * width,
+        bottomRow: height - rObj[key].bottom_row * height
+      };
+      return sObj;
+    });
+
     // console.log(width, height, clarifaiFace);
-    return {
-      leftCol: clarifaiFace.left_col * width,
-      topRow: clarifaiFace.top_row * height,
-      rightCol: width - clarifaiFace.right_col * width,
-      bottomRow: height - clarifaiFace.bottom_row * height
-    };
+    // return {
+    //   leftCol: clarifaiFace.left_col * width,
+    //   topRow: clarifaiFace.top_row * height,
+    //   rightCol: width - clarifaiFace.right_col * width,
+    //   bottomRow: height - clarifaiFace.bottom_row * height
+    // };
+    return sObj;
   };
 
-  displayFaceBox = box => {
-    this.setState({ box });
+  displayFaceBox = boxArray => {
+    this.setState({ boxArray });
   };
 
   onInputChange = e => {
@@ -130,7 +146,7 @@ class App extends Component {
   };
 
   render() {
-    const { isSignedIn, imageUrl, route, box } = this.state;
+    const { isSignedIn, imageUrl, route, boxArray } = this.state;
 
     return (
       <div className="App">
@@ -150,7 +166,7 @@ class App extends Component {
               onInputChange={this.onInputChange}
               onSubmit={this.onPictureSubmit}
             />
-            <FaceRecognition box={box} imageUrl={imageUrl} />
+            <FaceRecognition boxArray={boxArray} imageUrl={imageUrl} />
           </div>
         ) : route === "signin" ? (
           <SignIn loadUser={this.loadUser} onRouteChange={this.onRouteChange} />
